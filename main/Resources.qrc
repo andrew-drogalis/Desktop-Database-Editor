@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>pierpontlogo_darkRed.png</file>
+        <file>pierpontlogowhiteback@3x.png</file>
+        <file>PierpontIcon.png</file>
+        <file>icons8-file-64.png</file>
+        <file>icons8-print-100.png</file>
+        <file>icons8-sign-out-96.png</file>
+        <file>icons8-x-100.png</file>
+    </qresource>
+</RCC>

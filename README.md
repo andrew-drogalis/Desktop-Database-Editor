@@ -9,11 +9,21 @@
 ## About the Project
 
 
+
 ## Screenshots
 
-<!-- 
-<img src="https://raw.githubusercontent.com/andrew-drogalis/Business-Analytics-Desktop-App/main/assets/Analytics_1.PNG" alt="CLI-Email-
-Scanner-Screenshot" style="width: 850px; padding-top: 10px;"> -->
+### Online Database:
+
+The live table object is directly editable from within the application. Any changes made are pushed to the database once the selection is cleared.
+
+<img src="https://raw.githubusercontent.com/andrew-drogalis/Desktop-Database-Editor/main/assets/PM-DB-Online.PNG" alt="Database-Online-Screenshot" style="width: 850px; padding-top: 10px;">
+
+
+### Offline Database:
+After signing off, the data is cleared from memory. The user is safe to walk away from computer without closing the application.
+
+<img src="https://raw.githubusercontent.com/andrew-drogalis/Desktop-Database-Editor/main/assets/PM-DB-Offline.PNG" alt="Database-Offline-Screenshot" style="width: 850px; padding-top: 10px;">
+
 
 
 ## License

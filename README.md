@@ -1,25 +1,22 @@
-
 # Desktop Database Editor
-
 
 ## Table of Contents
 
-* [Instructions](#Instructions)
+* [About the Project](#About-the-Project)
+* [Screenshots](#Screenshots)
 * [License](#License)
 
-## Instructions
+## About the Project
 
-Once the application has started the instructions page will appear with a summary of the steps outlined below.
 
-- The progress bar on the right hand side will give you an understanding of how much of the information has been completed. 
+## Screenshots
 
-- The application supports both light mode and dark mode.
-
-- The zoom percent is shown in the bottom right and can be adjusted for user accessibility.
+<!-- 
+<img src="https://raw.githubusercontent.com/andrew-drogalis/Business-Analytics-Desktop-App/main/assets/Analytics_1.PNG" alt="CLI-Email-
+Scanner-Screenshot" style="width: 850px; padding-top: 10px;"> -->
 
 
 ## License
 
-This software is distributed under the GNU license. Please read [LICENSE](https://github.com/andrew-drogalis/Ideal-Home-Location-Matcher/blob/main/LICENSE) for information on the software availability and distribution.
-
+This software is distributed under the GNU license. Please read [LICENSE](https://github.com/andrew-drogalis/CLI-Email-Scanner/blob/main/LICENSE) for information on the software availability and distribution.
 

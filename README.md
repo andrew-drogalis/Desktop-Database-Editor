@@ -8,7 +8,11 @@
 
 ## About the Project
 
+This project was initiated to help a non-technical client manage their MySQL database. The database manages the active list of clients, client email addresses, as well as internal client IDs. The application authenticates the user with secure password login and stores credentials locally until session expiration or logoff.
 
+In QT, there are live table object for Excel-like ability to modify data and reflect those changes automatically in the database. This was incorporated into the application, along with proper error handling and data validation. The data validation ensures the proper data types and data lengths matched the database requirements. 
+
+Additionally, the client requested print functionality be included to visualize the database on paper. Overall, this project vastly simplified and speed up the database updating process, and the customer greatly appreciates the convenience and cost savings.
 
 ## Screenshots
 
@@ -23,7 +27,6 @@ The live table object is directly editable from within the application. Any chan
 After signing off, the data is cleared from memory. The user is safe to walk away from computer without closing the application.
 
 <img src="https://raw.githubusercontent.com/andrew-drogalis/Desktop-Database-Editor/main/assets/PM-DB-Offline.PNG" alt="Database-Offline-Screenshot" style="width: 850px; padding-top: 10px;">
-
 
 
 ## License

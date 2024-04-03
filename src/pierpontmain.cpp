@@ -26,9 +26,11 @@ void PierpontMain::on_pushButton_2_clicked()
     if (flag){
         if (database.open()){
             tabelModel->removeRow(id2-1);
-            if(tabelModel->submitAll() ) {
+            if(tabelModel->submitAll() ) 
+            {
                 tabelModel->database().commit();
-            } else {
+            } else 
+            {
                 tabelModel->database().rollback();
             }
             tabelModel->setTable("Maintenance_Clients");
@@ -53,7 +55,8 @@ void PierpontMain::on_pushButton_3_clicked()
     email = ui->lineEdit_5->text();
 
     //.transaction();
-    if (displayname == "") {
+    if (displayname == "") 
+    {
         displayname = name;
     }
 
@@ -66,7 +69,7 @@ void PierpontMain::on_pushButton_3_clicked()
     else {
         if (database.open()){
             QSqlRecord record = tabelModel->record();
-            /* since the id field has the autoincrement attribute,
+            /* since the id field has the auto-increment attribute,
             * it is not necessary to indicate its value,
             * that is because this field of the request is removed.
             */
@@ -99,7 +102,8 @@ void PierpontMain::on_pushButton_3_clicked()
 void PierpontMain::on_pushButtonConnect_clicked()
 {
     // Check if Password is Saved
-    if (main_password == "" || !database.open()){
+    if (main_password == "" || !database.open())
+    {
         ConnOpen();
         if (!database.open()) {
             main_password = ui->lineEdit->text();
@@ -107,7 +111,8 @@ void PierpontMain::on_pushButtonConnect_clicked()
         }
     }
 
-    if (database.open()) {
+    if (database.open()) 
+    {
         ui->lineEdit->setPlaceholderText("Password Saved");
         ui->lineEdit->setText("");
         ui->label_28->setText("⬤ DATABASE ONLINE");
@@ -116,20 +121,23 @@ void PierpontMain::on_pushButtonConnect_clicked()
 
         tabelModel = new QSqlTableModel;
 
-        if(ui->comboBox->currentText() == "Mechanic Personnel"){
+        if(ui->comboBox->currentText() == "Mechanic Personnel")
+        {
             tabelModel->setTable("Mechanic_Personnel");
             tabelModel->select();
             ui->tableView->setModel(tabelModel);
             ui->tableView->hideColumn(0);
             ui->stackedWidget->setCurrentIndex(1);
-        } else if(ui->comboBox->currentText() == "Maintenance Clients"){
+        } else if(ui->comboBox->currentText() == "Maintenance Clients")
+        {
             tabelModel->setTable("Maintenance_Clients");
             tabelModel->select();
             ui->tableView->setModel(tabelModel);
             ui->tableView->hideColumn(0);
             ui->stackedWidget->setCurrentIndex(0);
         }
-        else if(ui->comboBox->currentText() == "Construction Clients"){
+        else if(ui->comboBox->currentText() == "Construction Clients")
+        {
             tabelModel->setTable("Construction_Clients");
             tabelModel->select();
             ui->tableView->setModel(tabelModel);
@@ -191,10 +199,13 @@ void PierpontMain::on_actionPrint_triggered()
     out << "</tr></thead>\n";
 
     // data table
-    for (int row = 0; row < rowCount; row++) {
+    for (int row = 0; row < rowCount; row++) 
+    {
         out << "<tr>";
-        for (int column = 0; column < columnCount; column++) {
-            if (!ui->tableView->isColumnHidden(column)) {
+        for (int column = 0; column < columnCount; column++) 
+        {
+            if (!ui->tableView->isColumnHidden(column)) 
+            {
                 QString data = ui->tableView->model()->data(ui->tableView->model()->index(row, column)).toString().simplified();
                 out << QString("<td bkcolor=0>%1</td>").arg((!data.isEmpty()) ? data : QString("&nbsp;"));
             }
@@ -231,7 +242,8 @@ void PierpontMain::on_pushButton_5_clicked()
     jobnumber = ui->lineEdit_7->text();
 
     //database.transaction();
-    if (displayname == "") {
+    if (displayname == "") 
+    {
         displayname = name;
     }
 
@@ -242,9 +254,10 @@ void PierpontMain::on_pushButton_5_clicked()
         QMessageBox::warning(this,"Display Name Character Limit","Currently: '"+s+"' Characters \nRemove Characters from Display Name (Auto Filled Name)");
     }
     else {
-        if (database.open()){
+        if (database.open())
+        {
             QSqlRecord record = tabelModel->record();
-            /* since the id field has the autoincrement attribute,
+            /* since the id field has the auto-increment attribute,
             * it is not necessary to indicate its value,
             * that is because this field of the request is removed.
             */
@@ -254,7 +267,8 @@ void PierpontMain::on_pushButton_5_clicked()
             record.setValue("address", address);
             record.setValue("job_number", jobnumber);
             /*-1 is set to indicate that it will be added to the last row*/
-            if(tabelModel->insertRecord(-1, record)){
+            if(tabelModel->insertRecord(-1, record))
+            {
                 tabelModel->submitAll();
                 tabelModel->setTable("Construction_Clients");
                 tabelModel->select();
@@ -282,12 +296,16 @@ void PierpontMain::on_pushButton_4_clicked()
     bool flag;
     id = ui->lineEdit_13->text();
     int id2 = id.toInt(&flag);
-    if (flag){
-        if (database.open()){
+    if (flag)
+    {
+        if (database.open())
+        {
             tabelModel->removeRow(id2-1);
-            if(tabelModel->submitAll() ) {
+            if(tabelModel->submitAll() ) 
+            {
                 tabelModel->database().commit();
-            } else {
+            } else 
+            {
                 tabelModel->database().rollback();
             }
             tabelModel->setTable("Construction_Clients");
@@ -296,7 +314,8 @@ void PierpontMain::on_pushButton_4_clicked()
             ui->tableView->hideColumn(0);
             ui->lineEdit_13->setText("");
         }
-    } else {
+    } else 
+    {
         QMessageBox::warning(this,"Number Invalid","Please enter whole number with NO letters or symbols.");
     }
 }
@@ -311,9 +330,10 @@ void PierpontMain::on_pushButton_7_clicked()
 
     //database.transaction();
 
-    if (database.open()){
+    if (database.open())
+    {
         QSqlRecord record = tabelModel->record();
-        /* since the id field has the autoincrement attribute,
+        /* since the id field has the auto increment attribute,
         * it is not necessary to indicate its value,
         * that is because this field of the request is removed.
         */
@@ -321,7 +341,8 @@ void PierpontMain::on_pushButton_7_clicked()
         record.setValue("name", name);
 
         /*-1 is set to indicate that it will be added to the last row*/
-        if(tabelModel->insertRecord(-1, record)){
+        if(tabelModel->insertRecord(-1, record))
+        {
             tabelModel->submitAll();
             tabelModel->setTable("Mechanic_Personnel");
             tabelModel->select();
@@ -329,7 +350,8 @@ void PierpontMain::on_pushButton_7_clicked()
             ui->tableView->hideColumn(0);
             ui->lineEdit_12->setText("");
         }
-        else{
+        else
+        {
           database.rollback();
         }
     } else {
@@ -345,10 +367,13 @@ void PierpontMain::on_pushButton_6_clicked()
     bool flag;
     id = ui->lineEdit_11->text();
     int id2 = id.toInt(&flag);
-    if (flag){
-        if (database.open()){
+    if (flag)
+    {
+        if (database.open())
+        {
             tabelModel->removeRow(id2-1);
-            if(tabelModel->submitAll() ) {
+            if(tabelModel->submitAll() ) 
+            {
                 tabelModel->database().commit();
             } else {
                 tabelModel->database().rollback();

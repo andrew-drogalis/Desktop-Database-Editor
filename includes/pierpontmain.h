@@ -23,7 +23,8 @@ public:
     QString main_password;
     QSqlDatabase database;
 
-    void ConnOpen(){
+    void ConnOpen()
+    {
         database = QSqlDatabase::addDatabase("QMYSQL");
         database.setHostName("HIDDEN FOR PRIVACY");
         database.setPort(3306);

@@ -1,3 +1,6 @@
+// Copyright 2024, Andrew Drogalis
+// GNU License
+
 #ifndef PIERPONTMAIN_H
 #define PIERPONTMAIN_H
 
@@ -17,52 +20,49 @@ class PierpontMain : public QMainWindow
     Q_OBJECT
 
 public:
-    PierpontMain(QWidget *parent = nullptr);
-    ~PierpontMain();
-
     QString main_password;
     QSqlDatabase database;
 
-    void ConnOpen()
-    {
-        database = QSqlDatabase::addDatabase("QMYSQL");
-        database.setHostName("HIDDEN FOR PRIVACY");
-        database.setPort(3306);
-        database.setUserName("HIDDEN FOR PRIVACY");
-        database.setDatabaseName("HIDDEN FOR PRIVACY");
-        database.setPassword(main_password);
-    };
+    PierpontMain(QWidget *parent = nullptr);
 
-    void ConnClose(){
-        database.close();
-        database.removeDatabase(QSqlDatabase::defaultConnection);
-    };
-    //
+    ~PierpontMain();
+
+    PierpontMain(const PierpontMain& obj) = delete;
+
+    PierpontMain& operator=(const PierpontMain& obj) = delete;
+
+    PierpontMain(PierpontMain&& obj) = delete;
+
+    PierpontMain& operator=(PierpontMain&& obj) = delete;
+
+    void ConnOpen();
+
+    void ConnClose();
 
 private slots:
-    void on_pushButton_3_clicked();
 
-    void on_pushButtonConnect_clicked();
+    void SubmitPasswordAndConnectToDB();
 
-    void on_pushButton_2_clicked();
+    void DeleteMaintenanceRow();
 
-    void on_actionExit_triggered();
+    void AddMaintenanceRow();
 
-    void on_actionSign_Out_triggered();
+    void DeleteConstructionRow();
 
-    void on_actionPrint_triggered();
+    void AddConstructionRow();
 
-    void on_pushButton_5_clicked();
+    void DeleteMechanicRow();
 
-    void on_pushButton_4_clicked();
+    void AddMechanicRow();
 
-    void on_pushButton_7_clicked();
+    void ExitApplication();
 
-    void on_pushButton_6_clicked();
+    void LogOffSession();
+
+    void PrintDatabase();
 
 private:
     Ui::PierpontMain *ui;
-
-    QSqlTableModel *tabelModel;
+    QSqlTableModel *tableModel = nullptr;
 };
 #endif // PIERPONTMAIN_H

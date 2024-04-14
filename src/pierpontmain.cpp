@@ -1,3 +1,6 @@
+// Copyright 2024, Andrew Drogalis
+// GNU License
+
 #include "pierpontmain.h"
 #include "ui_pierpontmain.h"
 
@@ -7,108 +10,35 @@ PierpontMain::PierpontMain(QWidget *parent)
 {
     ui->setupUi(this);
     ui->stackedWidget->setCurrentIndex(0);
-    // Init
-
 }
 
 PierpontMain::~PierpontMain()
 {
+    if (tableModel) { delete tableModel; }
     delete ui;
 }
 
-void PierpontMain::on_pushButton_2_clicked()
+void PierpontMain::ConnOpen()
 {
-    // DELETE MAINTENANCE ROW
-    QString id;
-    bool flag;
-    id = ui->lineEdit_10->text();
-    int id2 = id.toInt(&flag);
-    if (flag){
-        if (database.open()){
-            tabelModel->removeRow(id2-1);
-            if(tabelModel->submitAll() ) 
-            {
-                tabelModel->database().commit();
-            } else 
-            {
-                tabelModel->database().rollback();
-            }
-            tabelModel->setTable("Maintenance_Clients");
-            tabelModel->select();
-            ui->tableView->setModel(tabelModel);
-            ui->tableView->hideColumn(0);
-            ui->lineEdit_10->setText("");
-        }
-    } else {
-        QMessageBox::warning(this,"Number Invalid","Please enter whole number with NO letters or symbols.");
-    }
+    database = QSqlDatabase::addDatabase("QMYSQL");
+    database.setHostName("HIDDEN FOR PRIVACY");
+    database.setPort(3306);
+    database.setUserName("HIDDEN FOR PRIVACY");
+    database.setDatabaseName("HIDDEN FOR PRIVACY");
+    database.setPassword(main_password); 
 }
 
-void PierpontMain::on_pushButton_3_clicked()
+void PierpontMain::ConnClose()
 {
-    // MAINTENANCE ADD ROW
-    QString displayname, name, address, email;
-
-    displayname = ui->lineEdit_2->text();
-    name = ui->lineEdit_3->text();
-    address = ui->lineEdit_4->text();
-    email = ui->lineEdit_5->text();
-
-    //.transaction();
-    if (displayname == "") 
-    {
-        displayname = name;
-    }
-
-    int len = displayname.length();
-    QString s = QString::number(len);
-
-    if (len > 56){
-        QMessageBox::warning(this,"Display Name Character Limit","Currently: '"+s+"' Characters \nRemove Characters from Display Name (Auto Filled Name)");
-    }
-    else {
-        if (database.open()){
-            QSqlRecord record = tabelModel->record();
-            /* since the id field has the auto-increment attribute,
-            * it is not necessary to indicate its value,
-            * that is because this field of the request is removed.
-            */
-            record.remove(record.indexOf("id"));
-            record.setValue("display_name", displayname);
-            record.setValue("name", name);
-            record.setValue("address", address);
-            record.setValue("email_address", email);
-            /*-1 is set to indicate that it will be added to the last row*/
-            if(tabelModel->insertRecord(-1, record)){
-                tabelModel->submitAll();
-                tabelModel->setTable("Maintenance_Clients");
-                tabelModel->select();
-                ui->tableView->setModel(tabelModel);
-                ui->tableView->hideColumn(0);
-                ui->lineEdit_2->setText("");
-                ui->lineEdit_3->setText("");
-                ui->lineEdit_4->setText("");
-                ui->lineEdit_5->setText("");
-            }
-            else{
-                database.rollback();
-            }
-        }else {
-            QMessageBox::warning(this,"Connection Lost","Please Re-Connect.");
-        }
-    }
+    database.close();
+    database.removeDatabase(QSqlDatabase::defaultConnection);
 }
 
-void PierpontMain::on_pushButtonConnect_clicked()
+void PierpontMain::SubmitPasswordAndConnectToDB()
 {
-    // Check if Password is Saved
-    if (main_password == "" || !database.open())
-    {
+    if (! database.open()) {
+        if (main_password == "") { main_password = ui->lineEdit->text(); }
         ConnOpen();
-        if (!database.open()) {
-            main_password = ui->lineEdit->text();
-            ConnOpen();
-        }
     }
 
     if (database.open()) 
@@ -119,28 +49,29 @@ void PierpontMain::on_pushButtonConnect_clicked()
         ui->label_28->setStyleSheet("#label_28{color:green;}");
         ui->tableView->setEnabled(true);
 
-        tabelModel = new QSqlTableModel;
+        if (! tableModel) { tableModel = new QSqlTableModel; }
 
         if(ui->comboBox->currentText() == "Mechanic Personnel")
         {
-            tabelModel->setTable("Mechanic_Personnel");
-            tabelModel->select();
-            ui->tableView->setModel(tabelModel);
+            tableModel->setTable("Mechanic_Personnel");
+            tableModel->select();
+            ui->tableView->setModel(tableModel);
             ui->tableView->hideColumn(0);
             ui->stackedWidget->setCurrentIndex(1);
-        } else if(ui->comboBox->currentText() == "Maintenance Clients")
+        }
+        else if(ui->comboBox->currentText() == "Maintenance Clients")
         {
-            tabelModel->setTable("Maintenance_Clients");
-            tabelModel->select();
-            ui->tableView->setModel(tabelModel);
+            tableModel->setTable("Maintenance_Clients");
+            tableModel->select();
+            ui->tableView->setModel(tableModel);
             ui->tableView->hideColumn(0);
             ui->stackedWidget->setCurrentIndex(0);
         }
         else if(ui->comboBox->currentText() == "Construction Clients")
         {
-            tabelModel->setTable("Construction_Clients");
-            tabelModel->select();
-            ui->tableView->setModel(tabelModel);
+            tableModel->setTable("Construction_Clients");
+            tableModel->select();
+            ui->tableView->setModel(tableModel);
             ui->tableView->hideColumn(0);
             ui->stackedWidget->setCurrentIndex(2);
         }
@@ -148,17 +79,228 @@ void PierpontMain::on_pushButtonConnect_clicked()
     } else{
         QMessageBox::information(this,"Password Incorrect","Re-Enter Password & Check Internet Connection.");
     }
-
-    // Where username='"+username+"'
 }
 
-void PierpontMain::on_actionExit_triggered()
+void PierpontMain::DeleteMaintenanceRow()
+{
+    // DELETE MAINTENANCE ROW
+    QString const id = ui->lineEdit_10->text();
+    bool flag;
+    int const id2 = id.toInt(&flag);
+    if (flag){
+        if (database.open()){
+            tableModel->removeRow(id2-1);
+            if (tableModel->submitAll()) { tableModel->database().commit(); } 
+            else { tableModel->database().rollback(); }
+            // ----------------------------
+            tableModel->setTable("Maintenance_Clients");
+            tableModel->select();
+            ui->tableView->setModel(tableModel);
+            ui->tableView->hideColumn(0);
+            ui->lineEdit_10->setText("");
+        }
+    } else {
+        QMessageBox::warning(this,"Number Invalid","Please enter whole number with NO letters or symbols.");
+    }
+}
+
+void PierpontMain::AddMaintenanceRow()
+{
+    // MAINTENANCE ADD ROW
+    QString displayname, name, address, email;
+
+    displayname = ui->lineEdit_2->text();
+    name = ui->lineEdit_3->text();
+    address = ui->lineEdit_4->text();
+    email = ui->lineEdit_5->text();
+
+    if (displayname == "") { displayname = name; }
+
+    int const len = displayname.length();
+    QString const s = QString::number(len);
+
+    if (len > 56)
+    {
+        QMessageBox::warning(this,"Display Name Character Limit","Currently: '"+s+"' Characters \nRemove Characters from Display Name (Auto Filled Name)");
+    }
+    else {
+        if (database.open()){
+            QSqlRecord record = tableModel->record();
+            /* Since the id field has the auto-increment attribute,
+            * it is not necessary to indicate its value. 
+            * Remove the ID so the DB generates it for us. */
+            record.remove(record.indexOf("id"));
+            record.setValue("display_name", displayname);
+            record.setValue("name", name);
+            record.setValue("address", address);
+            record.setValue("email_address", email);
+            /*-1 is set to indicate that it will be added to the last row*/
+            if(tableModel->insertRecord(-1, record)){
+                tableModel->submitAll();
+                tableModel->setTable("Maintenance_Clients");
+                tableModel->select();
+                ui->tableView->setModel(tableModel);
+                ui->tableView->hideColumn(0);
+                ui->lineEdit_2->setText("");
+                ui->lineEdit_3->setText("");
+                ui->lineEdit_4->setText("");
+                ui->lineEdit_5->setText("");
+            }
+            else
+            {
+                database.rollback();
+            }
+        }else {
+            QMessageBox::warning(this,"Connection Lost","Please Re-Connect.");
+        }
+    }
+}
+
+void PierpontMain::DeleteConstructionRow()
+{
+    // DELETE CONSTRUCTION ROW
+    QString const id = ui->lineEdit_13->text();
+    bool flag;
+    int const id2 = id.toInt(&flag);
+    if (flag)
+    {
+        if (database.open())
+        {
+            tableModel->removeRow(id2-1);
+            if(tableModel->submitAll()) { tableModel->database().commit(); }
+            else { tableModel->database().rollback(); }
+            // ----------------------------
+            tableModel->setTable("Construction_Clients");
+            tableModel->select();
+            ui->tableView->setModel(tableModel);
+            ui->tableView->hideColumn(0);
+            ui->lineEdit_13->setText("");
+        }
+    } else 
+    {
+        QMessageBox::warning(this,"Number Invalid","Please enter whole number with NO letters or symbols.");
+    }
+}
+
+void PierpontMain::AddConstructionRow()
+{
+    // CONSTRUCTION ADD ROW
+    QString displayname, name, address, jobnumber;
+
+    displayname = ui->lineEdit_8->text();
+    name = ui->lineEdit_6->text();
+    address = ui->lineEdit_9->text();
+    jobnumber = ui->lineEdit_7->text();
+
+    //database.transaction();
+    if (displayname == "")  { displayname = name; }
+
+    int const len = displayname.length();
+    QString const s = QString::number(len);
+
+    if (len > 56)
+    {
+        QMessageBox::warning(this,"Display Name Character Limit","Currently: '"+s+"' Characters \nRemove Characters from Display Name (Auto Filled Name)");
+    }
+    else {
+        if (database.open())
+        {
+            QSqlRecord record = tableModel->record();
+            /* Since the id field has the auto-increment attribute,
+            * it is not necessary to indicate its value. 
+            * Remove the ID so the DB generates it for us. */
+            record.remove(record.indexOf("id"));
+            record.setValue("display_name", displayname);
+            record.setValue("name", name);
+            record.setValue("address", address);
+            record.setValue("job_number", jobnumber);
+            /*-1 is set to indicate that it will be added to the last row*/
+            if(tableModel->insertRecord(-1, record))
+            {
+                tableModel->submitAll();
+                tableModel->setTable("Construction_Clients");
+                tableModel->select();
+                ui->tableView->setModel(tableModel);
+                ui->tableView->hideColumn(0);
+                ui->lineEdit_8->setText("");
+                ui->lineEdit_6->setText("");
+                ui->lineEdit_9->setText("");
+                ui->lineEdit_7->setText("");
+            }
+            else
+            {
+                database.rollback();
+            }
+        } else {
+            QMessageBox::warning(this,"Connection Lost","Please Re-Connect.");
+        }
+    }
+}
+
+void PierpontMain::DeleteMechanicRow()
+{
+    // DELETE MECHANIC ROW
+    QString const id = ui->lineEdit_11->text();
+    bool flag;
+    int const id2 = id.toInt(&flag);
+    if (flag)
+    {
+        if (database.open())
+        {
+            tableModel->removeRow(id2-1);
+            if(tableModel->submitAll()) { tableModel->database().commit(); }
+            else { tableModel->database().rollback(); }
+            // ----------------------------
+            tableModel->setTable("Mechanic_Personnel");
+            tableModel->select();
+            ui->tableView->setModel(tableModel);
+            ui->tableView->hideColumn(0);
+            ui->lineEdit_11->setText("");
+        }
+    } else {
+        QMessageBox::warning(this,"Number Invalid","Please enter whole number with NO letters or symbols.");
+    }
+}
+
+void PierpontMain::AddMechanicRow()
+{
+    // MECHANIC ADD ROW
+    QString const name = ui->lineEdit_12->text();
+
+    if (database.open())
+    {
+        QSqlRecord record = tableModel->record();
+        /* Since the id field has the auto-increment attribute,
+        * it is not necessary to indicate its value. 
+        * Remove the ID so the DB generates it for us. */
+        record.remove(record.indexOf("id"));
+        record.setValue("name", name);
+
+        /*-1 is set to indicate that it will be added to the last row*/
+        if(tableModel->insertRecord(-1, record))
+        {
+            tableModel->submitAll();
+            tableModel->setTable("Mechanic_Personnel");
+            tableModel->select();
+            ui->tableView->setModel(tableModel);
+            ui->tableView->hideColumn(0);
+            ui->lineEdit_12->setText("");
+        }
+        else
+        {
+          database.rollback();
+        }
+    } else {
+        QMessageBox::warning(this,"Connection Lost","Please Re-Connect.");
+    }
+}
+
+void PierpontMain::ExitApplication()
 {
     QApplication::quit();
 }
 
-
-void PierpontMain::on_actionSign_Out_triggered()
+void PierpontMain::LogOffSession()
 {
     main_password = "";
     ui->lineEdit->setPlaceholderText("");
@@ -168,20 +310,11 @@ void PierpontMain::on_actionSign_Out_triggered()
     ConnClose();
 }
 
-
-void PierpontMain::on_actionPrint_triggered()
+void PierpontMain::PrintDatabase()
 {
-    //QPrinter printer;
-    //QPrintDialog dialog(&printer,this);
-    //dialog.setWindowTitle("Print Table");
-
-    //Here is a variation of the first answer that gets rid of the intermediate file.
-    QString strTitle = "Table_ViewDocument";
+    QString const strTitle = "Table_ViewDocument";
     QString strStream;
     QTextStream out(&strStream);
-
-    const int rowCount = ui->tableView->model()->rowCount();
-    const int columnCount = ui->tableView->model()->columnCount();
 
     out <<  "<html>\n"
         "<head>\n"
@@ -197,6 +330,9 @@ void PierpontMain::on_actionPrint_triggered()
         if (!ui->tableView->isColumnHidden(column))
             out << QString("<th>%1</th>").arg(ui->tableView->model()->headerData(column, Qt::Horizontal).toString());
     out << "</tr></thead>\n";
+
+    const int rowCount = ui->tableView->model()->rowCount();
+    const int columnCount = ui->tableView->model()->columnCount();
 
     // data table
     for (int row = 0; row < rowCount; row++) 
@@ -227,166 +363,5 @@ void PierpontMain::on_actionPrint_triggered()
     }
 
     delete document;
-
+    delete dialog;
 }
-
-
-void PierpontMain::on_pushButton_5_clicked()
-{
-    // CONSTRUCTION ADD ROW
-    QString displayname, name, address, jobnumber;
-
-    displayname = ui->lineEdit_8->text();
-    name = ui->lineEdit_6->text();
-    address = ui->lineEdit_9->text();
-    jobnumber = ui->lineEdit_7->text();
-
-    //database.transaction();
-    if (displayname == "") 
-    {
-        displayname = name;
-    }
-
-    int len = displayname.length();
-    QString s = QString::number(len);
-
-    if (len > 56){
-        QMessageBox::warning(this,"Display Name Character Limit","Currently: '"+s+"' Characters \nRemove Characters from Display Name (Auto Filled Name)");
-    }
-    else {
-        if (database.open())
-        {
-            QSqlRecord record = tabelModel->record();
-            /* since the id field has the auto-increment attribute,
-            * it is not necessary to indicate its value,
-            * that is because this field of the request is removed.
-            */
-            record.remove(record.indexOf("id"));
-            record.setValue("display_name", displayname);
-            record.setValue("name", name);
-            record.setValue("address", address);
-            record.setValue("job_number", jobnumber);
-            /*-1 is set to indicate that it will be added to the last row*/
-            if(tabelModel->insertRecord(-1, record))
-            {
-                tabelModel->submitAll();
-                tabelModel->setTable("Construction_Clients");
-                tabelModel->select();
-                ui->tableView->setModel(tabelModel);
-                ui->tableView->hideColumn(0);
-                ui->lineEdit_8->setText("");
-                ui->lineEdit_6->setText("");
-                ui->lineEdit_9->setText("");
-                ui->lineEdit_7->setText("");
-            }
-            else{
-                database.rollback();
-            }
-        } else {
-            QMessageBox::warning(this,"Connection Lost","Please Re-Connect.");
-        }
-    }
-}
-
-
-void PierpontMain::on_pushButton_4_clicked()
-{
-    // DELETE CONSTRUCTION ROW
-    QString id;
-    bool flag;
-    id = ui->lineEdit_13->text();
-    int id2 = id.toInt(&flag);
-    if (flag)
-    {
-        if (database.open())
-        {
-            tabelModel->removeRow(id2-1);
-            if(tabelModel->submitAll() ) 
-            {
-                tabelModel->database().commit();
-            } else 
-            {
-                tabelModel->database().rollback();
-            }
-            tabelModel->setTable("Construction_Clients");
-            tabelModel->select();
-            ui->tableView->setModel(tabelModel);
-            ui->tableView->hideColumn(0);
-            ui->lineEdit_13->setText("");
-        }
-    } else 
-    {
-        QMessageBox::warning(this,"Number Invalid","Please enter whole number with NO letters or symbols.");
-    }
-}
-
-
-void PierpontMain::on_pushButton_7_clicked()
-{
-    // MECHANIC ADD ROW
-    QString name;
-
-    name = ui->lineEdit_12->text();
-
-    //database.transaction();
-
-    if (database.open())
-    {
-        QSqlRecord record = tabelModel->record();
-        /* since the id field has the auto increment attribute,
-        * it is not necessary to indicate its value,
-        * that is because this field of the request is removed.
-        */
-        record.remove(record.indexOf("id"));
-        record.setValue("name", name);
-
-        /*-1 is set to indicate that it will be added to the last row*/
-        if(tabelModel->insertRecord(-1, record))
-        {
-            tabelModel->submitAll();
-            tabelModel->setTable("Mechanic_Personnel");
-            tabelModel->select();
-            ui->tableView->setModel(tabelModel);
-            ui->tableView->hideColumn(0);
-            ui->lineEdit_12->setText("");
-        }
-        else
-        {
-          database.rollback();
-        }
-    } else {
-        QMessageBox::warning(this,"Connection Lost","Please Re-Connect.");
-    }
-
-}
-
-void PierpontMain::on_pushButton_6_clicked()
-{
-    // DELETE MECHANIC ROW
-    QString id;
-    bool flag;
-    id = ui->lineEdit_11->text();
-    int id2 = id.toInt(&flag);
-    if (flag)
-    {
-        if (database.open())
-        {
-            tabelModel->removeRow(id2-1);
-            if(tabelModel->submitAll() ) 
-            {
-                tabelModel->database().commit();
-            } else {
-                tabelModel->database().rollback();
-            }
-            tabelModel->setTable("Mechanic_Personnel");
-            tabelModel->select();
-            ui->tableView->setModel(tabelModel);
-            ui->tableView->hideColumn(0);
-            ui->lineEdit_11->setText("");
-        }
-    } else {
-        QMessageBox::warning(this,"Number Invalid","Please enter whole number with NO letters or symbols.");
-    }
-
-}
-

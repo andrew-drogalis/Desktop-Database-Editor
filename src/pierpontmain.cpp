@@ -335,10 +335,10 @@ void PierpontMain::PrintDatabase()
     const int columnCount = ui->tableView->model()->columnCount();
 
     // data table
-    for (int row = 0; row < rowCount; row++) 
+    for (int row = 0; row < rowCount; ++row) 
     {
         out << "<tr>";
-        for (int column = 0; column < columnCount; column++) 
+        for (int column = 0; column < columnCount; ++column) 
         {
             if (!ui->tableView->isColumnHidden(column)) 
             {

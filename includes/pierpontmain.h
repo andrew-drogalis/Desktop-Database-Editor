@@ -6,24 +6,27 @@
 
 #include <QMainWindow>
 #include <QMessageBox>
-#include <QPrinter>
 #include <QPrintDialog>
-#include <QtSql>
+#include <QPrinter>
 #include <QSqlDatabase>
+#include <QtSql>
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class PierpontMain; }
+namespace Ui
+{
+class PierpontMain;
+}
 QT_END_NAMESPACE
 
 class PierpontMain : public QMainWindow
 {
     Q_OBJECT
 
-public:
+  public:
     QString main_password;
     QSqlDatabase database;
 
-    PierpontMain(QWidget *parent = nullptr);
+    PierpontMain(QWidget* parent = nullptr);
 
     ~PierpontMain();
 
@@ -39,7 +42,7 @@ public:
 
     void ConnClose();
 
-private slots:
+  private slots:
 
     void SubmitPasswordAndConnectToDB();
 
@@ -61,8 +64,8 @@ private slots:
 
     void PrintDatabase();
 
-private:
-    Ui::PierpontMain *ui;
-    QSqlTableModel *tableModel = nullptr;
+  private:
+    Ui::PierpontMain* ui;
+    QSqlTableModel* tableModel = nullptr;
 };
-#endif // PIERPONTMAIN_H
+#endif// PIERPONTMAIN_H

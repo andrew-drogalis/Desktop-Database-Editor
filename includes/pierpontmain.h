@@ -23,9 +23,6 @@ class PierpontMain : public QMainWindow
     Q_OBJECT
 
   public:
-    QString main_password;
-    QSqlDatabase database;
-
     PierpontMain(QWidget* parent = nullptr);
 
     ~PierpontMain();
@@ -38,11 +35,11 @@ class PierpontMain : public QMainWindow
 
     PierpontMain& operator=(PierpontMain&& obj) = delete;
 
+  private slots:
+  
     void ConnOpen();
 
     void ConnClose();
-
-  private slots:
 
     void SubmitPasswordAndConnectToDB();
 
@@ -65,7 +62,10 @@ class PierpontMain : public QMainWindow
     void PrintDatabase();
 
   private:
-    Ui::PierpontMain* ui;
+    Ui::PierpontMain* ui = nullptr;
     QSqlTableModel* tableModel = nullptr;
+    QString main_password;
+    QSqlDatabase database;
+
 };
 #endif// PIERPONTMAIN_H

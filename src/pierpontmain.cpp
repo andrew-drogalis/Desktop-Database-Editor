@@ -76,7 +76,7 @@ void PierpontMain::SubmitPasswordAndConnectToDB()
             ui->stackedWidget->setCurrentIndex(2);
         }
     }
-    else { QMessageBox::information(this, "Password Incorrect", "Re-Enter Password & Check Internet Connection."); }
+    else { QMessageBox::information(this, "Failed to Connect", "Please Re-Enter Password & Check Internet Connection."); }
 }
 
 void PierpontMain::DeleteMaintenanceRow()

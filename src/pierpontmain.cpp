@@ -36,7 +36,7 @@ void PierpontMain::SubmitPasswordAndConnectToDB()
 {
     if (! database.open())
     {
-        QString textFieldPassword = ui->lineEdit->text();
+        QString const textFieldPassword = ui->lineEdit->text();
         if (textFieldPassword != "") { main_password = textFieldPassword; }
         ConnOpen();
     }
@@ -83,12 +83,12 @@ void PierpontMain::DeleteMaintenanceRow()
 {
     QString const id = ui->lineEdit_10->text();
     bool flag;
-    int const id2 = id.toInt(&flag);
+    int const idInt = id.toInt(&flag);
     if (flag)
     {
         if (database.open())
         {
-            tableModel->removeRow(id2 - 1);
+            tableModel->removeRow(idInt - 1);
             if (tableModel->submitAll()) { tableModel->database().commit(); }
             else { tableModel->database().rollback(); }
             // ----------------------------
@@ -98,6 +98,7 @@ void PierpontMain::DeleteMaintenanceRow()
             ui->tableView->hideColumn(0);
             ui->lineEdit_10->setText("");
         }
+        else { QMessageBox::warning(this, "Connection Lost", "Please Re-Connect."); }
     }
     else { QMessageBox::warning(this, "Number Invalid", "Please enter whole number with NO letters or symbols."); }
 }
@@ -114,12 +115,11 @@ void PierpontMain::AddMaintenanceRow()
     if (displayname == "") { displayname = name; }
 
     int const len = displayname.length();
-    QString const s = QString::number(len);
 
     if (len > 56)
     {
         QMessageBox::warning(this, "Display Name Character Limit",
-                             "Currently: '" + s + "' Characters \nRemove Characters from Display Name (Auto Filled Name)");
+                             "Currently: '" + QString::number(len) + "' Characters \nRemove Characters from Display Name (Auto Filled Name)");
     }
     else
     {
@@ -157,12 +157,12 @@ void PierpontMain::DeleteConstructionRow()
 {
     QString const id = ui->lineEdit_13->text();
     bool flag;
-    int const id2 = id.toInt(&flag);
+    int const idInt = id.toInt(&flag);
     if (flag)
     {
         if (database.open())
         {
-            tableModel->removeRow(id2 - 1);
+            tableModel->removeRow(idInt - 1);
             if (tableModel->submitAll()) { tableModel->database().commit(); }
             else { tableModel->database().rollback(); }
             // ----------------------------
@@ -172,6 +172,7 @@ void PierpontMain::DeleteConstructionRow()
             ui->tableView->hideColumn(0);
             ui->lineEdit_13->setText("");
         }
+        else { QMessageBox::warning(this, "Connection Lost", "Please Re-Connect."); }
     }
     else { QMessageBox::warning(this, "Number Invalid", "Please enter whole number with NO letters or symbols."); }
 }
@@ -185,16 +186,14 @@ void PierpontMain::AddConstructionRow()
     address = ui->lineEdit_9->text();
     jobnumber = ui->lineEdit_7->text();
 
-    // database.transaction();
     if (displayname == "") { displayname = name; }
 
     int const len = displayname.length();
-    QString const s = QString::number(len);
 
     if (len > 56)
     {
         QMessageBox::warning(this, "Display Name Character Limit",
-                             "Currently: '" + s + "' Characters \nRemove Characters from Display Name (Auto Filled Name)");
+                             "Currently: '" + QString::number(len) + "' Characters \nRemove Characters from Display Name (Auto Filled Name)");
     }
     else
     {
@@ -232,12 +231,12 @@ void PierpontMain::DeleteMechanicRow()
 {
     QString const id = ui->lineEdit_11->text();
     bool flag;
-    int const id2 = id.toInt(&flag);
+    int const idInt = id.toInt(&flag);
     if (flag)
     {
         if (database.open())
         {
-            tableModel->removeRow(id2 - 1);
+            tableModel->removeRow(idInt - 1);
             if (tableModel->submitAll()) { tableModel->database().commit(); }
             else { tableModel->database().rollback(); }
             // ----------------------------
@@ -247,6 +246,7 @@ void PierpontMain::DeleteMechanicRow()
             ui->tableView->hideColumn(0);
             ui->lineEdit_11->setText("");
         }
+        else { QMessageBox::warning(this, "Connection Lost", "Please Re-Connect."); }
     }
     else { QMessageBox::warning(this, "Number Invalid", "Please enter whole number with NO letters or symbols."); }
 }
@@ -305,17 +305,22 @@ void PierpontMain::PrintDatabase()
            "<body bgcolor=#ffffff link=#5000A0>\n"
            "<table border=1 cellspacing=0 cellpadding=2>\n";
 
-    // headers
     out << "<thead><tr bgcolor=#f0f0f0>";
-    for (int column = 0; column < columnCount; column++)
-        if (! ui->tableView->isColumnHidden(column))
-            out << QString("<th>%1</th>").arg(ui->tableView->model()->headerData(column, Qt::Horizontal).toString());
-    out << "</tr></thead>\n";
 
     const int rowCount = ui->tableView->model()->rowCount();
     const int columnCount = ui->tableView->model()->columnCount();
 
-    // data table
+    // Headers
+    for (int column = 0; column < columnCount; column++)
+    {
+        if (! ui->tableView->isColumnHidden(column))
+        {
+            out << QString("<th>%1</th>").arg(ui->tableView->model()->headerData(column, Qt::Horizontal).toString());
+        }
+    }
+    out << "</tr></thead>\n";
+
+    // Data Table
     for (int row = 0; row < rowCount; ++row)
     {
         out << "<tr>";
@@ -323,7 +328,7 @@ void PierpontMain::PrintDatabase()
         {
             if (! ui->tableView->isColumnHidden(column))
             {
-                QString data = ui->tableView->model()->data(ui->tableView->model()->index(row, column)).toString().simplified();
+                QString const data = ui->tableView->model()->data(ui->tableView->model()->index(row, column)).toString().simplified();
                 out << QString("<td bkcolor=0>%1</td>").arg((! data.isEmpty()) ? data : QString("&nbsp;"));
             }
         }

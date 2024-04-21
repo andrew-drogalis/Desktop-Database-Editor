@@ -27,13 +27,13 @@ class PierpontMain : public QMainWindow
 
     ~PierpontMain();
 
-    PierpontMain(const PierpontMain& obj) = default;
+    PierpontMain(const PierpontMain& obj) = delete;
 
-    PierpontMain& operator=(const PierpontMain& obj) = default;
+    PierpontMain& operator=(const PierpontMain& obj) = delete;
 
-    PierpontMain(PierpontMain&& obj) = default;
+    PierpontMain(PierpontMain&& obj) = delete;
 
-    PierpontMain& operator=(PierpontMain&& obj) = default;
+    PierpontMain& operator=(PierpontMain&& obj) = delete;
 
   private slots:
   

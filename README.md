@@ -8,7 +8,7 @@
 
 ## About the Project
 
-This project was initiated to help a non-technical client manage their MySQL database. The database manages the active list of clients, client email addresses, as well as internal client IDs. The application authenticates the user with secure password login and stores credentials locally until session expiration or logoff.
+This project was initiated to help a non-technical client manage their MySQL database. The database manages the active list of clients, client email addresses, as well as internal client IDs. The application authenticates the user with secure password login and stores credentials locally until session expiration or the user logs off.
 
 In QT, there are live table object for Excel-like ability to modify data and reflect those changes automatically in the database. This was incorporated into the application, along with proper error handling and data validation. The data validation ensures the proper data types and data lengths matched the database requirements. 
 

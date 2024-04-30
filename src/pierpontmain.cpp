@@ -16,6 +16,10 @@ PierpontMain::~PierpontMain()
     delete ui;
 }
 
+// ==================================================
+// Manage Connections
+// ==================================================
+
 void PierpontMain::ConnOpen()
 {
     database = QSqlDatabase::addDatabase("QMYSQL");
@@ -79,6 +83,10 @@ void PierpontMain::SubmitPasswordAndConnectToDB()
     else { QMessageBox::information(this, "Failed to Connect", "Please Re-Enter Password & Check Internet Connection."); }
 }
 
+// ==================================================
+// Manage SQL Tables
+// ==================================================
+
 void PierpontMain::DeleteMaintenanceRow()
 {
     QString const id = ui->lineEdit_10->text();
@@ -105,17 +113,14 @@ void PierpontMain::DeleteMaintenanceRow()
 
 void PierpontMain::AddMaintenanceRow()
 {
-    QString displayname, name, address, email;
-
-    displayname = ui->lineEdit_2->text();
-    name = ui->lineEdit_3->text();
-    address = ui->lineEdit_4->text();
-    email = ui->lineEdit_5->text();
+    QString displayname = ui->lineEdit_2->text();
+    QString const name = ui->lineEdit_3->text();
+    QString const address = ui->lineEdit_4->text();
+    QString const email = ui->lineEdit_5->text();
 
     if (displayname == "") { displayname = name; }
 
     int const len = displayname.length();
-
     if (len > 56)
     {
         QMessageBox::warning(this, "Display Name Character Limit",
@@ -179,12 +184,10 @@ void PierpontMain::DeleteConstructionRow()
 
 void PierpontMain::AddConstructionRow()
 {
-    QString displayname, name, address, jobnumber;
-
-    displayname = ui->lineEdit_8->text();
-    name = ui->lineEdit_6->text();
-    address = ui->lineEdit_9->text();
-    jobnumber = ui->lineEdit_7->text();
+    QString displayname = ui->lineEdit_8->text();
+    QString const name = ui->lineEdit_6->text();
+    QString const address = ui->lineEdit_9->text();
+    QString const jobnumber = ui->lineEdit_7->text();
 
     if (displayname == "") { displayname = name; }
 
@@ -279,6 +282,10 @@ void PierpontMain::AddMechanicRow()
     else { QMessageBox::warning(this, "Connection Lost", "Please Re-Connect."); }
 }
 
+// ==================================================
+// Utilities
+// ==================================================
+
 void PierpontMain::ExitApplication() { QApplication::quit(); }
 
 void PierpontMain::LogOffSession()
@@ -338,6 +345,7 @@ void PierpontMain::PrintDatabase()
            "</body>\n"
            "</html>\n";
 
+    // PRINT SQL TABLE IN HTML
     QTextDocument* document = new QTextDocument();
     document->setHtml(strStream);
 

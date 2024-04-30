@@ -36,12 +36,20 @@ class PierpontMain : public QMainWindow
     PierpontMain& operator=(PierpontMain&& obj) = delete;
 
   private slots:
+
+    // ==================================================
+    // Manage Connections
+    // ==================================================
   
     void ConnOpen();
 
     void ConnClose();
 
     void SubmitPasswordAndConnectToDB();
+  
+    // ==================================================
+    // Manage SQL Tables
+    // ==================================================
 
     void DeleteMaintenanceRow();
 
@@ -54,6 +62,10 @@ class PierpontMain : public QMainWindow
     void DeleteMechanicRow();
 
     void AddMechanicRow();
+
+    // ==================================================
+    // Utilities
+    // ==================================================
 
     void ExitApplication();
 
